@@ -1,46 +1,37 @@
 <?php
-// composer require phpmailer/phpmailer
 
-require '/path/to/PHPMailer/PHPMailer.php';
-require '/path/to/PHPMailer/SMTP.php';
-require '/path/to/PHPMailer/Exception.php';
+namespace App\Services\User;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-$mail = new PHPMailer(true);
+class SendMailService
+{
+    public function __construct()
+    {
+    }
 
-$mail->isSMTP();
-$mail->Host = 'smtp.example.com'; // Укажите smtp-сервер, например, smtp.gmail.com
-$mail->SMTPAuth = true;
-$mail->Username = 'your_email@example.com'; // Укажите ваш email для отправки
-$mail->Password = 'your_password'; // Укажите пароль от вашего email
-$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-$mail->Port = 587;
+    public function send($user)
+    {
+        $mail = new PHPMailer();
+        $mail->isSMTP();
+        $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+        $mail->Host = 'ssl://smtp.rambler.ru';
+        $mail-> Port = 465;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->SMTPAuth = true;
+        $mail->Username = 'testmailer08@rambler.ru';
+        $mail->Password = 'Passwordformailer08';
+        $mail->setFrom('testmailer08@rambler.ru', 'Instant Remember');
+        $mail->AddAddress("testaddress08@rambler.ru");
+        $mail->Subject = 'subject';
+        $mail->Body = 'body';
 
-$mail->setFrom('your_email@example.com', 'Your Name'); // Укажите ваш email и имя отправителя
-$mail->addAddress($email, $name); // Укажите email и имя получателя
-
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-  echo 'Введите корректный email';
-  exit;
-}
-
-if (empty($email) || empty($name) || empty($text)) {
-  echo 'Пожалуйста, заполните все поля';
-  exit;
-}
-
-$mail->isHTML(true);
-$mail->Subject = 'Заголовок письма';
-$mail->Body = $text;
-
-$mail->addAttachment('path/to/file.pdf');
-
-try {
-  $mail->send();
-  echo 'Email отправлен';
-} catch (Exception $e) {
-  echo 'Ошибка при отправке email: ', $mail->ErrorInfo;
+        if (!$mail-> send()) {
+            echo 'Mailer Error: '. $mail->ErrorInfo;
+        } else {
+            echo 'Message sent!';
+        }
+    }
 }
